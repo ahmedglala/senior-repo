@@ -1,35 +1,52 @@
 pipeline {
     agent any
 
+    environment {
+        IMAGE_NAME = "nodejs-app"
+        IMAGE_TAG = "${BUILD_NUMBER}"
+    }
+
     stages {
 
-        stage('Checkout') {
+        stage('Checkout Code') {
             steps {
-                git clone git@github.com:ahmedglala/senior-repo.git
-                checkout scm
+                echo ' Checking out branch: nodejs-docker-task'
+                checkout(
+                    scmGit(
+                        branches: [[name: '*/nodejs-docker-task']],
+                        extensions: [],
+                        userRemoteConfigs: [[
+                            credentialsId: 'github-cred',
+                            url: 'https://github.com/ahmedglala/senior-repo.git
+                        ]]
+                    )
+                )
             }
         }
 
         stage('Build Docker Image') {
             steps {
-                docker build -t jenkis-pipe .
+                echo ' Building Docker image...'
+                sh """
+                    docker build -t ${IMAGE_NAME}:${IMAGE_TAG} .
+                """
             }
         }
 
         stage('Run Container') {
             steps {
-		docker rm -f my-app-container || true
-                docker run -d --name my-app-container -p 8080:8080 jenkis-pipe
-
+                echo 'Running Docker container...'
                 script {
-                    // Stops old container if exists
-                    sh '''
-                        docker rm -f my-app-container || true
-                        docker run -d --name my-app-container -p 8080:8080 jenkis-pipe
-                    '''
+                    // Stop old container if it exists
+                    sh "docker rm -f ${IMAGE_NAME} || true"
+
+                    // Run the container
+                    sh """
+                        docker run -d -p 3000:3000 --name ${IMAGE_NAME} ${IMAGE_NAME}:${IMAGE_TAG}
+                    """
                 }
             }
         }
     }
-}
 
+}
