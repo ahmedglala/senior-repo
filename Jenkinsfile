@@ -8,19 +8,9 @@ pipeline {
 
     stages {
 
-        stage('Checkout Code') {
-            steps {
-                echo ' Checking out branch: nodejs-docker-task'
-                checkout(
-                    scmGit(
-                        branches: [[name: '*/nodejs-docker-task']],
-                        extensions: [],
-                        userRemoteConfigs: [[
-                            credentialsId: 'github-cred',
-                            url: 'https://github.com/ahmedglala/senior-repo
-                        ]]
-                    )
-                )
+        stage('clone'){
+            steps{
+                git branch: 'main', url: 'https://github.com/ahmedglala/senior-repo'
             }
         }
 
