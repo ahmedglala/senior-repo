@@ -17,7 +17,7 @@ pipeline {
                         extensions: [],
                         userRemoteConfigs: [[
                             credentialsId: 'github-cred',
-                            url: 'https://github.com/ahmedglala/senior-repo.git
+                            url: 'https://github.com/ahmedglala/senior-repo
                         ]]
                     )
                 )
